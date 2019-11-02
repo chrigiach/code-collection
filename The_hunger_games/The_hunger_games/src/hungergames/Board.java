@@ -374,8 +374,41 @@ public class Board {
 		}
 	}
 	
+	
+	/*
+	 * creating the board of the game
+	 */
+	
 	String[][] getStringRepresentation(){
+		
+		int i, j, k;
+		
+		//create the board
 		String[][] board = new String[N][M];
+		
+		//fill the board with low cases
+		for(i = 0 ; i < N ; i++) {
+			for(j = 0 ; j < N ; j++) {
+				board[i][j] = "___   ";
+			}
+		}
+		
+		//place the weapons
+		for(k = 0 ; k < W ; k++) {
+			board[weapons[k].getx()][weapons[k].gety()] = "W" + weapons[k].getplayerId() + weapons[k].getid();
+		}
+		
+		//place the foods
+		for(k = 0 ; k < F ; k++) {
+			board[food[k].getx()][food[k].gety()] = "F" + food[k].getid();
+		}
+		
+		//place the traps
+		for(k = 0 ; k < F ; k++) {
+			board[traps[k].getx()][traps[k].gety()] = "T" + traps[k].getid();
+		}
+		
+		
 		return board;
 	}
 	
