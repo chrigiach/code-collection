@@ -6,19 +6,22 @@ import hungergames.Trap;
 
 public class Board {
 	
-	int x;
 	
 	//default constructor
 	protected Board() {
 	}
 	
 	//second constructor with the variables
-	protected Board(int N, int M, int W, int F, int T) {
+	protected Board(int N, int M, int W, int F, int T, int x) {
 		this.N = N;
 		this.M = M;
 		this.W = W;
 		this.F = F;
 		this.T = T;
+		setWeaponAreaLimits(x);
+		setFoodAreaLimits(x);
+		setTrapAreaLimits(x);
+		createBoard(x);
 	}
 	
 	//third constructor with board object as argument
@@ -123,7 +126,7 @@ public class Board {
 		 this.T = T;
 		}
 	
-	public void setWeaponAreaLimits() {
+	public void setWeaponAreaLimits(int x) {
 		weaponAreaLimits[0][0] = -x;
 		weaponAreaLimits[0][1] = -x;
 		weaponAreaLimits[1][0] = -x;
@@ -134,7 +137,7 @@ public class Board {
 		weaponAreaLimits[3][1] = -x;
 	}
 	
-	public void setFoodAreaLimits() {
+	public void setFoodAreaLimits(int x) {
 		weaponAreaLimits[0][0] = -(x+1);
 		weaponAreaLimits[0][1] = -(x+1);
 		weaponAreaLimits[1][0] = -(x+1);
@@ -145,7 +148,7 @@ public class Board {
 		weaponAreaLimits[3][1] = -(x+1);
 	}
 	
-	public void setTrapAreaLimits() {
+	public void setTrapAreaLimits(int x) {
 		weaponAreaLimits[0][0] = -(x+2);
 		weaponAreaLimits[0][1] = -(x+2);
 		weaponAreaLimits[1][0] = -(x+2);
@@ -172,7 +175,7 @@ public class Board {
 	 * create random items
 	 */
 	// x is the corner coordinate of weapons
-	void createRandomWeapon() {
+	public void createRandomWeapon(int x) {
 		/*
 		 * c is the x coordinate
 		 * d is the y coordinate
@@ -181,7 +184,7 @@ public class Board {
 		String weaptype;
 		
 		
-		for(int i = 0 ; i < (W/2) ; i++) {
+		for(int i = 0 ; i < (W/2) ; i+=2) {
 			
 			do {
 				 c = (int)(Math.random() * (2*x + 1)) - x;
@@ -235,7 +238,7 @@ public class Board {
 		}
 		
 		
-	void createRandomFood() {
+	void createRandomFood(int x) {
 		int points = 0;
 		/*
 		 * c is the x coordinate
@@ -290,7 +293,7 @@ public class Board {
 		}
 	}
 	
-	void createRandomTrap() {
+	void createRandomTrap(int x) {
 		int points = 0;
 		int c, d, q;
 		String traptype;
@@ -360,17 +363,17 @@ public class Board {
 		}
 	}
 	
-	void createBoard() {
-		createRandomWeapon();
-		createRandomFood();
-		createRandomTrap();
+	void createBoard(int x) {
+		createRandomWeapon(x);
+		createRandomFood(x);
+		createRandomTrap(x);
 	}
 	
 	
-	void resizeBoard(Player p1, Player p2) {
-		if(((p1.getx() != N) && (p2.getx() != N)) || ((p1.gety() != N) && (p2.gety() != N)) || ((p1.getx() != N) && (p2.gety() != N)) || ((p1.gety() != N) && (p2.getx() != N)) || (p1.getx() != N) || (p1.gety() != N) || (p2.getx() != N) || (p2.gety() != N)) {
-			setN(N - 1);
-			setM(M - 1);
+	void resizeBoard(Player P1, Player P2) {
+		if((P1.getx() != N) && (P1.getx() != -N) && (P1.gety() != M) && (P1.gety() != -M) && (P2.getx() != N) && (P2.getx() != -N) && (P2.gety() != M) && (P2.gety() != -M)) {
+			setN(N - 2);
+			setM(M - 2);
 		}
 	}
 	
@@ -389,7 +392,7 @@ public class Board {
 		//fill the board with low cases
 		for(i = 0 ; i < N ; i++) {
 			for(j = 0 ; j < N ; j++) {
-				board[i][j] = "___   ";
+				board[i][j] = " ___ ";
 			}
 		}
 		
