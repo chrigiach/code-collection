@@ -1,5 +1,9 @@
 package hungergames;
 
+import java.util.concurrent.ThreadLocalRandom;
+import hungergames.Board;
+
+
 public class Player {
 
 	/*
@@ -13,15 +17,15 @@ public class Player {
 	/*
 	 * Second constructor with arguments
 	 */
-	Player(int id, String name, Board board, int score, int x, int y, Weapon bow, Weapon pistol, Weapon sword){
+	Player(int id, String name, Board board, int score, int x, int y){
 		this.id = id;
 		this.board = board;
 		this.score = score;
 		this.x = x;
 		this.y = y;
-		this.bow = bow;
-		this.pistol = pistol;
-		this.sword = sword;
+		this.bow = null;
+		this.pistol = null;
+		this.sword = null;
 	}
 	
 	/*
@@ -47,7 +51,7 @@ public class Player {
 	
 	String name;
 	
-	Board board;
+	Board board = new Board();
 	
 	int score;
 	
@@ -55,15 +59,23 @@ public class Player {
 	
 	int y;
 	
-	Weapon bow;
+	Weapon bow = null;
 	
-	Weapon pistol;
+	Weapon pistol = null;
 	
-	Weapon sword;
+	Weapon sword = null;
+	
+	//c is the number that presents the random movement(number of dice)
+	int c;
 	
 	/*
 	 * getters
 	 */
+	
+	//we need to return the number c so that we can print what movement player did in class game
+	int getc() {
+		return c;
+	}
 	
 	int getid(){
 		return id;
@@ -154,8 +166,7 @@ public class Player {
 		int[] newplace = new int[2];
 		
 		
-		//c is the number that presents the random movement
-		int c;
+		
 		
 		
 		//k and l are the new coordinates that will be set
@@ -165,7 +176,7 @@ public class Player {
 		
 		// if the player is at the up and left corner of the board
 		if((k == -board.getN()) && (l == -board.getM())) {
-			c = (int)Math.random()*2 + 3;
+			c = (int)Math.random()*3 + 3;
 			switch(c) {
 			case 3:
 				if(k == -1) {
@@ -210,7 +221,7 @@ public class Player {
 		
 		// if the player is at the up and right corner of the board
 		else if((k == board.getN()) && (l == -board.getM())) {
-			c = (int)Math.random()*2 + 5;
+			c = (int)Math.random()*3 + 5;
 			switch(c) {
 			case 5:
 				if(l == -1) {
@@ -253,7 +264,17 @@ public class Player {
 		
 		// if the player is at the down and right corner of the board
 		else if((k == board.getN()) && (l == board.getM())) {
-			c = (int)Math.random()*2 + 5;
+			c = (int)Math.random()*3 + 1;
+			switch(c) {
+			case 1:
+				c = 1;
+				break;
+			case 2:
+				c = 7;
+				break;
+			case 3:
+				c = 8;
+			}
 			switch(c) {
 			case 1:
 				if(l != 1) {
@@ -296,7 +317,7 @@ public class Player {
 		
 		// if the player is at the down and left corner of the board
 		else if((k == -board.getN()) && (l == board.getM())) {
-			c = (int)Math.random()*2 + 1;
+			c = (int)Math.random()*3 + 1;
 			switch(c) {
 			case 1:
 				if(l != 1) {
@@ -339,7 +360,7 @@ public class Player {
 		
 		//if the player is at the up side of the board
 		else if(l == -board.getM()) {
-			c = (int)Math.random()*4 + 3;
+			c = (int)Math.random()*5 + 3;
 			switch(c) {
 				case 3:
 					if(k == -1) {
@@ -409,8 +430,11 @@ public class Player {
 		
 		//if the player is at the right side of the board
 		else if(k == board.getN()) {
-			c = (int)Math.random()*8 + 1;			
-			switch(c){
+			
+	        int[] arr = {1, 5, 6, 7, 8};
+	            c = ThreadLocalRandom.current().nextInt(0, arr.length);			
+			
+	            switch(c){
 				case 1:
 					if(l != 1) {
 						l = (l-1);
@@ -477,7 +501,9 @@ public class Player {
 		
 		//if the player is at the down side of the board
 		else if(l == board.getM()) {
-			c = (int)Math.random()*8 + 1;			
+			 int[] arr = {1, 2, 3, 7, 8};
+	            c = ThreadLocalRandom.current().nextInt(0, arr.length);	
+	            
 			switch(c){
 				case 1:
 					if(l != 1) {
@@ -545,7 +571,7 @@ public class Player {
 		
 		//if the player is at the left side of the board
 		else if(k == -board.getN()) {
-			c = (int)Math.random()*8 + 1;			
+			c = (int)Math.random()*5 + 1;			
 			switch(c){
 			case 1:
 				if(l != 1) {
@@ -748,16 +774,69 @@ public class Player {
 		int numbnewtrap = 0;
 		
 		
-		
-		
 		//making the movement
 		setx(newposition[0]);
 		sety(newposition[1]);
 		
+		
+		//checking for possible items on the new position
+		
+		
+		Weapon [] weapon = board.getWeapon();
+		Food [] food = board.getFood();
+		Trap [] trap = board.getTrap();
+		
+		
+		int i;
+		for(i = 0 ; i < board.getW() ; i++) {
+			if((weapon[i].getx() == this.x) && (weapon[i].gety() == this.x)) {
+				if(weapon[i].getplayerId() == this.id) {
+					numbnewweap +=1;
+					weapon[i].setx(0);
+					weapon[i].sety(0);
+					System.out.println("You got a " + weapon[i].gettype());
+				}
+			}
+		}
+		
+		for(i = 0 ; i < board.getF() ; i++) {
+			if((food[i].getx() == this.x) && (food[i].gety() == this.x)) {
+				numbnewfood +=1;
+				score += food[i].getpoints();
+				food[i].setx(0);
+				food[i].sety(0);
+				System.out.println("You got a food");
+			}
+		}
+		
+		for(i = 0 ; i < board.getT() ; i++) {
+			if((trap[i].getx() == this.x) && (trap[i].gety() == this.x)) {
+				
+				numbnewtrap +=1;
+				System.out.println("You got a " + trap[i].gettype());
+				if((trap[i].gettype() == "animal") && (bow != null)) {
+					System.out.println("You escaped the trap");
+				}
+				else if((trap[i].gettype() == "animal") && (bow == null)) {
+					score -= trap[i].getpoints();
+					System.out.println("You didn't escape the trap");
+				}
+				else if((trap[i].gettype() == "rope") && (sword != null)) {
+					System.out.println("You escaped the trap");				
+				}
+				else if((trap[i].gettype() == "rope") && (sword == null)) {
+					score -= trap[i].getpoints();
+					System.out.println("You didn't escape the trap");
+				}
+			}
+		}
+		
+		
+		
 		//create the board that will be returned
 		int[] movementresults = new int[5];
-		movementresults[0] = newposition[0];
-		movementresults[1] = newposition[1];
+		movementresults[0] = x;
+		movementresults[1] = y;
 		movementresults[2] = numbnewweap;
 		movementresults[3] = numbnewfood;
 		movementresults[4] = numbnewtrap;
